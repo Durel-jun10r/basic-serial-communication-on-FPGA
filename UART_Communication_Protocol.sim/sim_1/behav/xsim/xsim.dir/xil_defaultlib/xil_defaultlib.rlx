@@ -1,9 +1,0 @@
-0.7
-2020.2
-Nov 14 2025
-19:37:27
-C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.sim/sim_1/behav/xsim/glbl.v,1756381829,verilog,,,,glbl,,,,,,,,
-C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sim_1/new/uart_rx_simulation.v,1780219213,verilog,,,,uart_rx_simulation,,,../../../../../../../../../../AMDDesignTools/2025.2/Vivado/data/rsb/busdef,,,,,
-C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/SSD_Controller.v,1780216518,verilog,,C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/receiver_module.v,,SSD_Controller,,,../../../../../../../../../../AMDDesignTools/2025.2/Vivado/data/rsb/busdef,,,,,
-C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/receiver_module.v,1780202031,verilog,,C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/rx_top_module.v,,UART_RX,,,../../../../../../../../../../AMDDesignTools/2025.2/Vivado/data/rsb/busdef,,,,,
-C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/rx_top_module.v,1780219042,verilog,,C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sim_1/new/uart_rx_simulation.v,,rx_top_module,,,../../../../../../../../../../AMDDesignTools/2025.2/Vivado/data/rsb/busdef,,,,,

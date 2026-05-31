@@ -1,0 +1,14 @@
+# Vivado simulation and build files
+*.wdb
+*.wcfg
+*.jou
+*.log
+*.str
+*.pb
+*.dcp
+
+# Vivado generated directories
+*.cache/
+*.runs/
+*.sim/
+xsim/
