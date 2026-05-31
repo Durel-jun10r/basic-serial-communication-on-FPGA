@@ -12,3 +12,4 @@
 *.runs/
 *.sim/
 xsim/
+*.uart_rx_simulation_behav.wdb 
