@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="impl_1" LaunchPart="xc7a100ticsg324-1L" LaunchTime="1780223339">
+<GenRun Id="impl_1" LaunchPart="xc7a100ticsg324-1L" LaunchTime="1780250204">
   <File Type="PA-TCL" Name="rx_top_module.tcl"/>
   <File Type="REPORTS-TCL" Name="rx_top_module_reports.tcl"/>
   <File Type="INIT-TIMING" Name="rx_top_module_timing_summary_init.rpt"/>
@@ -115,6 +115,13 @@
   <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
+    <File Path="$PSRCDIR/sources_1/new/LEDS_Controller.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
     <File Path="$PSRCDIR/sources_1/new/SSD_Controller.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>

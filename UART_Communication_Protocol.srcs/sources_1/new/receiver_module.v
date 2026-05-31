@@ -1,102 +1,101 @@
 `timescale 1ns/1ps
-
 module UART_RX #(
-    parameter clk_freq = 100_000_000, //100MHz as clock freq
-    parameter baud_rate = 9600 //UART baud rate 
-    )(
-    input wire clk, //FPGA system clock
-    input wire rx, //serial input line
-    input wire reset, //reset signal
-    output reg [7:0] result, //received data byte
-    output reg completed //goes high when all 8-bits results are received
-    );
-    
-reg[2:0] current_state, next_state;
-reg[31:0] count;
-reg[3:0] index;
-reg[7:0] result_internal;
-reg[1:0] rx_sampled;
+    parameter CLK_FREQ  = 100_000_000,
+    parameter BAUD_RATE = 9600
+)(
+    input  wire        clk,
+    input  wire        rx,
+    input  wire        reset,
+    output reg  [7:0]  result,
+    output reg         completed
+);
 
-localparam integer T = clk_freq/baud_rate;
-localparam Look_start_bit   = 3'b000,
-           count_half_cycle = 3'b001,
-           sample_byte      = 3'b010,
-           get_stop_bit     = 3'b011,
-           done             = 3'b100;
-     
-     //sequential Logic
-always @(posedge clk or posedge reset) begin
-     if (reset) begin //reset everythings clear all temp regs
-        current_state   <= Look_start_bit;
-        count           <= 0;
-        index           <= 0;
-        result_internal <= 0; 
-        rx_sampled      <= 2'b11; //resets to '11' to avoid false falling-edge detection
-        completed       <= 0;
-     end
-     else begin
-        current_state   <= next_state;        
-        rx_sampled <= {rx_sampled[0], rx};
-        
-    case (current_state)
-        Look_start_bit: begin
-            completed <= 0;
-            count     <= 0;
-            index     <= 0;
-        end
-        count_half_cycle: begin
-            count   <= count + 1;
-            if (count == T/2)
-                count <= 0;
-        end
-        sample_byte: begin
-            count <= count + 1;
-            if (count == T/2) begin
-                result_internal[index] <= rx; //stores result_internal while taking position in account
+localparam integer T = CLK_FREQ / BAUD_RATE;  // 10416 cycles per bit
+
+// States
+localparam S_IDLE     = 3'd0,
+           S_START    = 3'd1,
+           S_DATA     = 3'd2,
+           S_STOP     = 3'd3,
+           S_DONE     = 3'd4;
+
+// Two-stage synchroniser for rx (metastability protection)
+reg [1:0] rx_sync = 2'b11;
+always @(posedge clk)
+    rx_sync <= {rx_sync[0], rx};
+
+wire rx_s = rx_sync[1];  // stable, synchronised rx
+
+reg [2:0]  state    = S_IDLE;
+reg [31:0] count    = 0;
+reg [3:0]  bit_idx  = 0;
+reg [7:0]  shift    = 0;
+
+always @(posedge clk) begin
+    completed <= 0;  // default: pulse for one cycle only
+
+    if (reset) begin
+        state     <= S_IDLE;
+        count     <= 0;
+        bit_idx   <= 0;
+        shift     <= 0;
+        completed <= 0;
+    end else begin
+        case (state)
+
+            S_IDLE: begin
+                count   <= 0;
+                bit_idx <= 0;
+                if (rx_s == 1'b0)        // falling edge = start bit detected
+                    state <= S_START;
             end
-            if (count == T) begin 
-                 count <= 0; //counter is reset after counting
-                 index <= index + 1; //index is the position of the bit which is being sampled
+
+            // Wait half a bit period to centre sampling on data bits
+            S_START: begin
+                if (count == T/2 - 1) begin
+                    count <= 0;
+                    // Verify start bit is still low (noise rejection)
+                    if (rx_s == 1'b0)
+                        state <= S_DATA;
+                    else
+                        state <= S_IDLE;   // glitch - abort
+                end else begin
+                    count <= count + 1;
+                end
             end
-       end
-       get_stop_bit: begin
-            count <= count + 1;
-            if (count == T)
-                count <= 0;
-       end
-       done: begin
-            completed <=1;
-            result <= result_internal;
-       end
-   endcase 
- end  
- end
- 
- 
- //Combinational Block
-always @(*) begin
-    next_state = current_state;
-    
-    case (current_state)
-       Look_start_bit: begin
-        if (rx_sampled == 2'b10)
-            next_state = count_half_cycle;
-        end
-       count_half_cycle: begin
-        if (count == T/2)
-            next_state = sample_byte;
-       end
-       sample_byte: begin
-        if (index == 4'b1000 && count == T)
-            next_state = get_stop_bit;
-       end
-        get_stop_bit: begin
-        if (count == T)
-            next_state = done;
-        end
-        done: begin
-        next_state = Look_start_bit;
-        end
-    endcase
- end
- endmodule     
+
+            // Sample 8 data bits, one per bit period
+            S_DATA: begin
+                if (count == T - 1) begin
+                    count          <= 0;
+                    shift[bit_idx] <= rx_s;
+                    if (bit_idx == 3'd7)
+                        state <= S_STOP;
+                    else
+                        bit_idx <= bit_idx + 1;
+                end else begin
+                    count <= count + 1;
+                end
+            end
+
+            // Wait one full bit period for stop bit
+            S_STOP: begin
+                if (count == T - 1) begin
+                    count <= 0;
+                    state <= S_DONE;
+                end else begin
+                    count <= count + 1;
+                end
+            end
+
+            S_DONE: begin
+                result    <= shift;
+                completed <= 1;    // pulses exactly one cycle
+                state     <= S_IDLE;
+            end
+
+        endcase
+    end
+end
+
+endmodule

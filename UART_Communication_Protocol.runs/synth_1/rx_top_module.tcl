@@ -56,9 +56,12 @@ if {$::dispatch::connected} {
 }
 
 OPTRACE "synth_1" START { ROLLUP_AUTO }
+set_param checkpoint.writeSynthRtdsInDcp 1
 set_param general.usePosixSpawnForFork 1
 set_param chipscope.maxJobs 5
 set_param xicom.use_bs_reader 1
+set_msg_config -id {Synth 8-256} -limit 10000
+set_msg_config -id {Synth 8-638} -limit 10000
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7a100ticsg324-1L
 
@@ -74,6 +77,7 @@ set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
+  C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/LEDS_Controller.v
   C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/SSD_Controller.v
   C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/receiver_module.v
   C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/rx_top_module.v

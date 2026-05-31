@@ -1,49 +1,46 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 31.05.2026 06:37:44
-// Design Name: 
-// Module Name: rx_top_module
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
 module rx_top_module(
     input  wire        clk,
     input  wire        reset,
     input  wire        rx,
     output wire [6:0]  seg,
-    output wire [7:0]  an
-    );
-    
-wire       completed;
-wire [7:0] rx_byte;
-
-UART_RX uart_rx_inst(
-        .clk(clk),
-        .rx(rx),
-        .reset(reset),
-        .result(rx_byte),
-        .completed(completed)
+    output wire [7:0]  an,
+    output wire [7:0]  LEDS
 );
 
-SSD_Controller ssd_inst(
-    .clk(clk),
-    .data_in(rx_byte),
-    .seg(seg),
-    .an(an)
+    // cpu_resetn is active-low; invert to get active-high for UART_RX
+    wire reset_active_high = ~reset;
+
+    wire        completed;
+    wire [7:0]  result;
+
+    // Latch last received byte - completed only pulses for one clock
+    reg [7:0] display_byte = 8'h00;
+    always @(posedge clk) begin
+        if (reset_active_high)
+            display_byte <= 8'h00;
+        else if (completed)
+            display_byte <= result;
+    end
+
+    UART_RX uart_rx_inst(
+        .clk(clk),
+        .rx(rx),
+        .reset(reset_active_high),
+        .result(result),
+        .completed(completed)
     );
-    
+
+    SSD_Controller ssd_inst(
+        .clk(clk),
+        .data_in(display_byte),   // ← latched, not raw result
+        .seg(seg),
+        .an(an)
+    );
+
+    LEDS_Controller led_control_inst(
+        .clk(clk),
+        .data_in(display_byte),   // ← latched, not raw result
+        .LEDS(LEDS)
+    );
+
 endmodule
