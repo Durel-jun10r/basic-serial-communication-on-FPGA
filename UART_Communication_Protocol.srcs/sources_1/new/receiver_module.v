@@ -6,96 +6,99 @@ module UART_RX #(
     input  wire        clk,
     input  wire        rx,
     input  wire        reset,
-    output reg  [7:0]  result,
-    output reg         completed
+    output reg  [7:0]  result    = 8'h00,
+    output reg         completed = 1'b0
 );
+    localparam integer T     = CLK_FREQ / BAUD_RATE;  // 10416
+    localparam integer T_HALF = T / 2;                // 5208
 
-localparam integer T = CLK_FREQ / BAUD_RATE;  // 10416 cycles per bit
+    localparam S_IDLE  = 3'd0,
+               S_START = 3'd1,
+               S_DATA  = 3'd2,
+               S_STOP  = 3'd3,
+               S_DONE  = 3'd4;
 
-// States
-localparam S_IDLE     = 3'd0,
-           S_START    = 3'd1,
-           S_DATA     = 3'd2,
-           S_STOP     = 3'd3,
-           S_DONE     = 3'd4;
+    // Two-stage synchroniser
+    reg [1:0] rx_sync = 2'b11;
+    always @(posedge clk)
+        rx_sync <= {rx_sync[0], rx};
+    wire rx_s = rx_sync[1];
 
-// Two-stage synchroniser for rx (metastability protection)
-reg [1:0] rx_sync = 2'b11;
-always @(posedge clk)
-    rx_sync <= {rx_sync[0], rx};
+    reg [2:0]  state   = S_IDLE;
+    reg [13:0] count   = 0;       // 14 bits is enough for T=10416
+    reg [2:0]  bit_idx = 0;       // 3 bits sufficient for 0-7
+    reg [7:0]  shift   = 0;
 
-wire rx_s = rx_sync[1];  // stable, synchronised rx
+    always @(posedge clk) begin
+        completed <= 1'b0;  // default pulse-low
 
-reg [2:0]  state    = S_IDLE;
-reg [31:0] count    = 0;
-reg [3:0]  bit_idx  = 0;
-reg [7:0]  shift    = 0;
-
-always @(posedge clk) begin
-    completed <= 0;  // default: pulse for one cycle only
-
-    if (reset) begin
-        state     <= S_IDLE;
-        count     <= 0;
-        bit_idx   <= 0;
-        shift     <= 0;
-        completed <= 0;
-    end else begin
-        case (state)
-
-            S_IDLE: begin
-                count   <= 0;
-                bit_idx <= 0;
-                if (rx_s == 1'b0)        // falling edge = start bit detected
-                    state <= S_START;
-            end
-
-            // Wait half a bit period to centre sampling on data bits
-            S_START: begin
-                if (count == T/2 - 1) begin
-                    count <= 0;
-                    // Verify start bit is still low (noise rejection)
-                    if (rx_s == 1'b0)
-                        state <= S_DATA;
-                    else
-                        state <= S_IDLE;   // glitch - abort
-                end else begin
-                    count <= count + 1;
+        if (reset) begin
+            state     <= S_IDLE;
+            count     <= 0;
+            bit_idx   <= 0;
+            shift     <= 0;
+            result    <= 8'h00;
+            completed <= 1'b0;
+        end else begin
+            case (state)
+                S_IDLE: begin
+                    count   <= 0;
+                    bit_idx <= 0;
+                    shift   <= 0;
+                    if (rx_s == 1'b0)        // start bit detected
+                        state <= S_START;
                 end
-            end
 
-            // Sample 8 data bits, one per bit period
-            S_DATA: begin
-                if (count == T - 1) begin
-                    count          <= 0;
-                    shift[bit_idx] <= rx_s;
-                    if (bit_idx == 3'd7)
-                        state <= S_STOP;
-                    else
-                        bit_idx <= bit_idx + 1;
-                end else begin
-                    count <= count + 1;
+                // Wait T/2 to centre-sample the start bit
+                S_START: begin
+                    if (count == T_HALF - 1) begin
+                        count <= 0;
+                        if (rx_s == 1'b0)
+                            state <= S_DATA;
+                        else
+                            state <= S_IDLE;  // glitch, abort
+                    end else begin
+                        count <= count + 1;
+                    end
                 end
-            end
 
-            // Wait one full bit period for stop bit
-            S_STOP: begin
-                if (count == T - 1) begin
-                    count <= 0;
-                    state <= S_DONE;
-                end else begin
-                    count <= count + 1;
+                // Sample 8 data bits at full bit periods
+                S_DATA: begin
+                    if (count == T - 1) begin
+                        count             <= 0;
+                        shift[bit_idx]    <= rx_s;
+                        if (bit_idx == 3'd7) begin
+                            bit_idx <= 0;
+                            state   <= S_STOP;
+                        end else begin
+                            bit_idx <= bit_idx + 1;
+                        end
+                    end else begin
+                        count <= count + 1;
+                    end
                 end
-            end
 
-            S_DONE: begin
-                result    <= shift;
-                completed <= 1;    // pulses exactly one cycle
-                state     <= S_IDLE;
-            end
+                // Wait for stop bit (verify high for noise rejection)
+                S_STOP: begin
+                    if (count == T - 1) begin
+                        count <= 0;
+                        if (rx_s == 1'b1)    // valid stop bit
+                            state <= S_DONE;
+                        else
+                            state <= S_IDLE;  // framing error, discard
+                    end else begin
+                        count <= count + 1;
+                    end
+                end
 
-        endcase
+                S_DONE: begin
+                    result    <= shift;
+                    completed <= 1'b1;
+                    state     <= S_IDLE;
+                end
+
+                default: state <= S_IDLE;
+            endcase
+        end
     end
-end
-
 endmodule

@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
-| Date         : Sun May 31 18:58:52 2026
+| Date         : Sat Jun  6 16:46:10 2026
 | Host         : Durel_PC running 64-bit major release  (build 9200)
 | Command      : report_control_sets -verbose -file rx_top_module_control_sets_placed.rpt
 | Design       : rx_top_module
@@ -27,7 +27,7 @@ Table of Contents
 |    Minimum number of control sets                        |     9 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |    33 |
+| Unused register locations in slices containing registers |    32 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -41,12 +41,12 @@ Table of Contents
 +--------------------+-------+
 | Total control sets |     9 |
 | >= 0 to < 4        |     1 |
-| >= 4 to < 6        |     2 |
+| >= 4 to < 6        |     1 |
 | >= 6 to < 8        |     0 |
-| >= 8 to < 10       |     3 |
+| >= 8 to < 10       |     2 |
 | >= 10 to < 12      |     0 |
-| >= 12 to < 14      |     0 |
-| >= 14 to < 16      |     0 |
+| >= 12 to < 14      |     1 |
+| >= 14 to < 16      |     1 |
 | >= 16              |     3 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
@@ -58,30 +58,30 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |              19 |            8 |
+| No           | No                    | No                     |              20 |           11 |
 | No           | No                    | Yes                    |               0 |            0 |
-| No           | Yes                   | No                     |              27 |           11 |
-| Yes          | No                    | No                     |               8 |            2 |
+| No           | Yes                   | No                     |              31 |           10 |
+| Yes          | No                    | No                     |               0 |            0 |
 | Yes          | No                    | Yes                    |               0 |            0 |
-| Yes          | Yes                   | No                     |              49 |           14 |
+| Yes          | Yes                   | No                     |              61 |           22 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
 4. Detailed Control Set Information
 -----------------------------------
 
-+----------------+------------------------------------------+------------------------+------------------+----------------+--------------+
-|  Clock Signal  |               Enable Signal              |    Set/Reset Signal    | Slice Load Count | Bel Load Count | Bels / Slice |
-+----------------+------------------------------------------+------------------------+------------------+----------------+--------------+
-|  clk_IBUF_BUFG |                                          | ssd_inst/an[0]_i_1_n_0 |                1 |              1 |         1.00 |
-|  clk_IBUF_BUFG | uart_rx_inst/bit_idx[3]_i_1_n_0          | uart_rx_inst/SR[0]     |                2 |              4 |         2.00 |
-|  clk_IBUF_BUFG | uart_rx_inst/FSM_onehot_state[4]_i_2_n_0 | uart_rx_inst/SR[0]     |                1 |              5 |         5.00 |
-|  clk_IBUF_BUFG | uart_rx_inst/result[7]_i_1_n_0           |                        |                2 |              8 |         4.00 |
-|  clk_IBUF_BUFG | uart_rx_inst/E[0]                        | uart_rx_inst/SR[0]     |                3 |              8 |         2.67 |
-|  clk_IBUF_BUFG |                                          | uart_rx_inst/SR[0]     |                5 |              9 |         1.80 |
-|  clk_IBUF_BUFG |                                          | ssd_inst/refresh_tick  |                5 |             17 |         3.40 |
-|  clk_IBUF_BUFG |                                          |                        |                8 |             19 |         2.38 |
-|  clk_IBUF_BUFG | uart_rx_inst/count[31]_i_1_n_0           | uart_rx_inst/SR[0]     |                8 |             32 |         4.00 |
-+----------------+------------------------------------------+------------------------+------------------+----------------+--------------+
++----------------+-------------------------------------------+------------------------+------------------+----------------+--------------+
+|  Clock Signal  |               Enable Signal               |    Set/Reset Signal    | Slice Load Count | Bel Load Count | Bels / Slice |
++----------------+-------------------------------------------+------------------------+------------------+----------------+--------------+
+|  clk_IBUF_BUFG |                                           | ssd_inst/an[0]_i_1_n_0 |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG | uart_rx_inst/FSM_onehot_state[4]_i_2_n_0  | uart_rx_inst/SR[0]     |                2 |              5 |         2.50 |
+|  clk_IBUF_BUFG | uart_rx_inst/FSM_onehot_state_reg_n_0_[4] | uart_rx_inst/SR[0]     |                3 |              8 |         2.67 |
+|  clk_IBUF_BUFG | uart_rx_inst/completed                    | uart_rx_inst/SR[0]     |                3 |              8 |         2.67 |
+|  clk_IBUF_BUFG |                                           | uart_rx_inst/SR[0]     |                4 |             12 |         3.00 |
+|  clk_IBUF_BUFG | uart_rx_inst/count[13]_i_1_n_0            | uart_rx_inst/SR[0]     |                7 |             14 |         2.00 |
+|  clk_IBUF_BUFG |                                           | ssd_inst/refresh_tick  |                5 |             18 |         3.60 |
+|  clk_IBUF_BUFG |                                           |                        |               11 |             20 |         1.82 |
+|  clk_IBUF_BUFG | blink_count[0]_i_1_n_0                    | uart_rx_inst/completed |                7 |             26 |         3.71 |
++----------------+-------------------------------------------+------------------------+------------------+----------------+--------------+
 
 

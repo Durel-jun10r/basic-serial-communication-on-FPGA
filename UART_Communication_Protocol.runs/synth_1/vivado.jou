@@ -3,22 +3,22 @@
 # SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
 # IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
 # SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
-# Start of session at: Sun May 31 18:56:47 2026
-# Process ID         : 62504
+# Start of session at: Sat Jun  6 16:43:58 2026
+# Process ID         : 53092
 # Current directory  : C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.runs/synth_1
 # Command line       : vivado.exe -log rx_top_module.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source rx_top_module.tcl
 # Log file           : C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.runs/synth_1/rx_top_module.vds
 # Journal file       : C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.runs/synth_1\vivado.jou
 # Running On         : Durel_PC
 # Platform           : Windows Server 2016 or Windows 10
-# Operating System   : 26200
+# Operating System   : 26220
 # Processor Detail   : Intel(R) Core(TM) Ultra 7 155H
 # CPU Frequency      : 2995 MHz
 # CPU Physical cores : 16
 # CPU Logical cores  : 22
 # Host memory        : 16573 MB
-# Swap memory        : 19600 MB
-# Total Virtual      : 36174 MB
-# Available Virtual  : 3460 MB
+# Swap memory        : 20401 MB
+# Total Virtual      : 36974 MB
+# Available Virtual  : 18780 MB
 #-----------------------------------------------------------
 source rx_top_module.tcl -notrace
