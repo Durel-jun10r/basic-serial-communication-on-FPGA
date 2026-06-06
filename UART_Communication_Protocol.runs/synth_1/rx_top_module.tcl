@@ -74,6 +74,7 @@ set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
+  C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/LEDS_Controller.v
   C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/SSD_Controller.v
   C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/receiver_module.v
   C:/Users/junio/Documents/FPGA_project/UART_project/UART_Communication_Protocol/UART_Communication_Protocol.srcs/sources_1/new/rx_top_module.v
