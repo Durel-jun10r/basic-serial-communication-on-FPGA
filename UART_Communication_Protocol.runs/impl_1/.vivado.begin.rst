@@ -23,3 +23,18 @@
     <Process Command="vivado.bat" Owner="junio" Host="DUREL_PC" Pid="10848" HostCore="22" HostMemory="016573128704">
     </Process>
 </ProcessHandle>
+<?xml version="1.0"?>
+<ProcessHandle Version="1" Minor="0">
+    <Process Command="vivado.bat" Owner="junio" Host="DUREL_PC" Pid="38804" HostCore="22" HostMemory="016573128704">
+    </Process>
+</ProcessHandle>
+<?xml version="1.0"?>
+<ProcessHandle Version="1" Minor="0">
+    <Process Command="vivado.bat" Owner="junio" Host="DUREL_PC" Pid="46900" HostCore="22" HostMemory="016573128704">
+    </Process>
+</ProcessHandle>
+<?xml version="1.0"?>
+<ProcessHandle Version="1" Minor="0">
+    <Process Command="vivado.bat" Owner="junio" Host="DUREL_PC" Pid="32256" HostCore="22" HostMemory="016573128704">
+    </Process>
+</ProcessHandle>

@@ -7,7 +7,8 @@ module UART_RX #(
     input  wire        rx,
     input  wire        reset,
     output reg  [7:0]  result    = 8'h00,
-    output reg         completed = 1'b0
+    output reg         completed = 1'b0,
+    output reg frame_error = 1'b0 //captures stop bit error
 );
     localparam integer T     = CLK_FREQ / BAUD_RATE;  // 10416
     localparam integer T_HALF = T / 2;                // 5208
@@ -28,7 +29,6 @@ module UART_RX #(
     reg [13:0] count   = 0;       // 14 bits is enough for T=10416
     reg [2:0]  bit_idx = 0;       // 3 bits sufficient for 0-7
     reg [7:0]  shift   = 0;
-
     always @(posedge clk) begin
         completed <= 1'b0;  // default pulse-low
 
@@ -39,6 +39,7 @@ module UART_RX #(
             shift     <= 0;
             result    <= 8'h00;
             completed <= 1'b0;
+            frame_error <=1'b0;
         end else begin
             case (state)
                 S_IDLE: begin
@@ -86,6 +87,7 @@ module UART_RX #(
                             state <= S_DONE;
                         else
                             state <= S_IDLE;  // framing error, discard
+                            frame_error <= 1; //frame error
                     end else begin
                         count <= count + 1;
                     end

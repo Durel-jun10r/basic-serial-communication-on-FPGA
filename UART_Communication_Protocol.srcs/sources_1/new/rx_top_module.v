@@ -1,11 +1,15 @@
-module rx_top_module(
+module rx_top_module #( 
+   parameter CLK_FREQ  = 100_000_000,
+   parameter BAUD_RATE = 9600 
+)
+ (
     input  wire        clk,
     input  wire        reset,    // cpu_resetn: 0 = button pressed, 1 = not pressed
     input  wire        rx,
     output wire [6:0]  seg,
     output wire [7:0]  an,
-    output wire [7:0]  LEDS,
-    output wire LED
+    output wire [7:0]  LEDS
+//    output wire LED
 );
     // cpu_resetn is 1 when idle, 0 when button pressed
     // We want active-high reset: assert reset when button IS pressed
@@ -13,7 +17,7 @@ module rx_top_module(
 
     wire        completed;
     wire [7:0]  result;
-
+    wire        frame_error;
     reg [7:0] display_byte = 8'h00;
     always @(posedge clk) begin
         if (reset_active_high)
@@ -22,30 +26,15 @@ module rx_top_module(
             display_byte <= result;
     end
 
-    // Debug: blink LED[7] for ~0.5s each time a byte is received
-    reg [25:0] blink_count = 0;
-    reg        blink_active = 0;
 
-    always @(posedge clk) begin
-        if (completed) begin
-            blink_active <= 1;
-            blink_count  <= 0;
-        end else if (blink_active) begin
-            if (blink_count == 26'd50_000_000)
-                 blink_active <= 0;
-            else
-                 blink_count <= blink_count + 1;
-        end
-    end
-
-assign LED = blink_active;
-
-    UART_RX uart_rx_inst(
+    UART_RX #(.CLK_FREQ(CLK_FREQ), .BAUD_RATE(BAUD_RATE))
+       uart_rx_inst (
         .clk(clk),
         .rx(rx),
         .reset(reset_active_high),
         .result(result),
-        .completed(completed)
+        .completed(completed),
+        .frame_error(frame_error)
     );
 
     SSD_Controller ssd_inst(
@@ -55,9 +44,12 @@ assign LED = blink_active;
         .an(an)
     );
 
+wire [7:0] leds_out;
     LEDS_Controller led_control_inst(
         .clk(clk),
         .data_in(display_byte),
-        .LEDS(LEDS)
+        .LEDS(leds_out)
     );
+ // LEDS[7] = frame error indicator, LEDS[6:0] = data bits    
+assign LEDS = {frame_error, leds_out[6:0]};
 endmodule
