@@ -39,4 +39,4 @@ set_property -dict { PACKAGE_PIN U17 IOSTANDARD LVCMOS33 } [get_ports { LEDS[6] 
 set_property -dict { PACKAGE_PIN U16 IOSTANDARD LVCMOS33 } [get_ports { LEDS[7] }];
 
 ## Debug blink LED (LED15 - leftmost)
-set_property -dict { PACKAGE_PIN V11 IOSTANDARD LVCMOS33 } [get_ports { LED }];
+#set_property -dict { PACKAGE_PIN V11 IOSTANDARD LVCMOS33 } [get_ports { LED }];

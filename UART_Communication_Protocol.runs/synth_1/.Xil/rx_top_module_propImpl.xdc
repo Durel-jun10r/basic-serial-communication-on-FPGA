@@ -51,5 +51,3 @@ set_property src_info {type:XDC file:1 line:38 export:INPUT save:INPUT read:READ
 set_property -dict { PACKAGE_PIN U17 IOSTANDARD LVCMOS33 } [get_ports { LEDS[6] }];
 set_property src_info {type:XDC file:1 line:39 export:INPUT save:INPUT read:READ} [current_design]
 set_property -dict { PACKAGE_PIN U16 IOSTANDARD LVCMOS33 } [get_ports { LEDS[7] }];
-set_property src_info {type:XDC file:1 line:42 export:INPUT save:INPUT read:READ} [current_design]
-set_property -dict { PACKAGE_PIN V11 IOSTANDARD LVCMOS33 } [get_ports { LED }];
